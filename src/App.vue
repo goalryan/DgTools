@@ -68,15 +68,6 @@
                 <template scope="scope">
                     <el-tag :type="scope.row.isPaid? 'primary' : 'success'"
                             close-transition>{{paymentStatus(scope.row)}}
-
-
-
-
-
-
-
-
-
                     </el-tag>
                 </template>
             </el-table-column>
@@ -94,9 +85,13 @@
 
 
 
+
+
                     </el-button>
                     <el-button v-if="scope.$index === order.customers.length - 1" size="small"
                                type="text" @click="addCustomer(scope.$index+1)">添加
+
+
 
 
 
@@ -240,7 +235,12 @@
                 this.order.customers.forEach((customer) => {
                     let totalProfit = 0;
                     customer.products.forEach((product) => {
-                        product.profit = (product.outTotalPrice - product.inTotalPrice * this.order.taxRate).toFixed(0);
+                        if (product.isRMB) {
+                            product.profit = (product.outTotalPrice - product.inTotalPrice).toFixed(0);
+                        } else {
+                            product.inTotalPrice = (product.inUnitPrice * product.quantity * this.order.taxRate).toFixed(0);
+                            product.profit = (product.outTotalPrice - product.inTotalPrice).toFixed(0);
+                        }
                         totalProfit += parseFloat(product.profit);
                     });
                     customer.profit = totalProfit;
@@ -412,7 +412,6 @@
 
     .el-input__inner {
         height: 25px;
-        width: 120px;
     }
 
     .el-table__expanded-cell {

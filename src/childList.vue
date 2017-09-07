@@ -1,6 +1,7 @@
 <template>
     <el-table
-            :data="products" border :show-summary="false" :stripe="true" style="width: 100%">
+            :data="products" border :show-summary="false" :stripe="true"
+            style="width: 100%">
         <el-table-column label="序号" type="index" width="50">
         </el-table-column>
         <el-table-column label="商品名称">
@@ -14,10 +15,18 @@
                           @change="changeQuantity(scope.$index)"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="成本价(港币)">
+        <el-table-column label="成本价">
             <template scope="scope">
                 <el-input v-model="scope.row.inUnitPrice" size="small" placeholder="请输入成本价"
                           @change="changeInUnitPrice(scope.$index)"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="币种" width="60">
+            <template scope="scope">
+                <el-button size="small" :type="scope.row.isRMB ? 'danger' : 'primary'"
+                           @click="changeCurrency(scope.$index,scope.row)">
+                    {{scope.row.isRMB ? 'RMB' : 'HKD'}}
+                </el-button>
             </template>
         </el-table-column>
         <el-table-column prop="outUnitPrice" label="卖出价(人民币)">
@@ -26,7 +35,7 @@
                           @change="changeOutUnitPrice(scope.$index)"></el-input>
             </template>
         </el-table-column>
-        <el-table-column prop="inTotalPrice" label="总成本(港币)">
+        <el-table-column prop="inTotalPrice" label="总成本(人民币)">
         </el-table-column>
         <el-table-column prop="outTotalPrice" label="总收入(人民币)">
         </el-table-column>
@@ -42,7 +51,9 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     export default {
+        components: {},
         name: 'childList',
         props: {
             products: {
@@ -94,6 +105,7 @@
                     inTotalPrice: '',
                     outTotalPrice: '',
                     profit: '',
+                    isRMB: false
                 }
                 this.products.splice(index + 1, 0, product);
             },
@@ -107,6 +119,14 @@
                     this.products.splice(index, 1);
                     this.$emit('updateCustomer');
                 }
+            },
+            changeCurrency(index, row) {
+                if (!row.isRMB) {
+                    row.isRMB = true;
+                } else {
+                    row.isRMB = !row.isRMB;
+                }
+                this.changeQuantity(index);
             },
             changeQuantity(index){
                 this.calculateOutTotalPrice(index);
@@ -126,7 +146,11 @@
             },
             calculateInTotalPrice(index){
                 const item = this.products[index];
-                item.inTotalPrice = (item.inUnitPrice * item.quantity).toFixed(0);
+                if (item.isRMB) {
+                    item.inTotalPrice = (item.inUnitPrice * item.quantity).toFixed(0);
+                } else {
+                    item.inTotalPrice = (item.inUnitPrice * item.quantity * this.taxRate).toFixed(0);
+                }
             },
             calculateOutTotalPrice(index){
                 const item = this.products[index];
@@ -134,7 +158,7 @@
             },
             calculateProfit(index){
                 const item = this.products[index];
-                item.profit = (item.outTotalPrice - item.inTotalPrice * this.taxRate).toFixed(0);
+                item.profit = (item.outTotalPrice - item.inTotalPrice).toFixed(0);
             }
         }
     };
