@@ -73,34 +73,9 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template scope="scope">
-                    <el-button size="small" type="text" @click="doOrCancelPaid(scope.row)">{{operationText(scope.row)}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </el-button>
+                    <el-button size="small" type="text" @click="doOrCancelPaid(scope.row)">{{operationText(scope.row)}}                    </el-button>
                     <el-button v-if="scope.$index === order.customers.length - 1" size="small"
                                type="text" @click="addCustomer(scope.$index+1)">添加
-
-
-
-
-
-
-
-
-
-
-
                     </el-button>
                     <el-button size="small" type="text" @click="delCustomer(scope.$index)">删除</el-button>
                 </template>
@@ -334,7 +309,7 @@
              * @param event
              */
             cellClick(row, column, cell, event) {
-                console.log(column);
+                //console.log(column);
                 const colName = column.label;
                 if (colName !== '客户名称' && colName !== '操作') {
                     if (this.expands.length === 0) {
