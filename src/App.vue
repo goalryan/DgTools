@@ -47,7 +47,7 @@
             </el-table-column>
             <el-table-column label="客户名称">
                 <template scope="scope">
-                    <el-input v-model="scope.row.name" size="small" placeholder="请输入客户名称"></el-input>
+                    <el-input v-model="scope.row.customerName" size="small" placeholder="请输入客户名称"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="数量" prop="quantity">
@@ -88,6 +88,7 @@
     import ChildList from './childList.vue';
     import DocHeader from './docHeader.vue';
     import store from './store.js';
+    import common from './common.js';
     export default {
         name: 'app',
         components: {
@@ -106,7 +107,7 @@
                 },
                 // 获取row的key值
                 getRowKeys(row) {
-                    return row.name;
+                    return row.id;
                 },
                 // 要展开的行，数值的元素是row的key值
                 expands: []
@@ -140,7 +141,7 @@
                 this.isEdit = true;
                 this.initDocNo();
                 this.order.docNo = this.docNo;
-                this.order.customers = [this.initCustomer(0)];
+                this.order.customers = [common.initCustomer()];
             },
             fetchDocNoList() {
                 this.docNoList = store.fetchDocNoList();
@@ -150,43 +151,19 @@
                 this.order = store.fetchDoc(this.docNo);
                 console.log(this.order);
             },
-            initCustomer(){
-                return {
-                    id: 0,
-                    name: '',
-                    quantity: '',
-                    inTotalPrice: '',
-                    outTotalPrice: '',
-                    profit: '',
-                    isPaid: false,
-                    remark: '',
-                    products: [
-                        {
-                            name: '',
-                            quantity: '',
-                            inUnitPrice: '',
-                            outUnitPrice: '',
-                            inTotalPrice: '',
-                            outTotalPrice: '',
-                            profit: '',
-                        },
-                    ]
-                }
-            },
-            expandRow() {
-            },
             addCustomer(index) {
                 this.isEdit = true;
                 this.initDocNo();
                 this.order.docNo = this.docNo;
-                this.order.customers.push(this.initCustomer(index));
+                this.order.customers.push(common.initCustomer());
+                console.log(this.order);
             },
             delCustomer(index) {
                 if (this.order.customers.length === 1) {
-                    this.$message({message: '必须保留一个客户', type: 'warning'});
+                    this.$message({ message: '必须保留一个客户', type: 'warning' });
                     return;
                 }
-                this.confirmDialog(this.order.customers[index].name, () => {
+                this.confirmDialog(this.order.customers[index].customerName, () => {
                     this.order.customers.splice(index, 1);
                 })
             },
@@ -229,7 +206,7 @@
                 }).then(() => {
                     callback();
                 }).catch(() => {
-                    this.$message({type: 'success', message: '已取消删除'});
+                    this.$message({ type: 'success', message: '已取消删除' });
                 });
             },
             initDocNo() {
@@ -243,7 +220,7 @@
             },
             saveDoc(){
                 store.saveDoc(this.order, this.docNo);
-                this.$message({message: '保存账单成功', type: 'success'});
+                this.$message({ message: '保存账单成功', type: 'success' });
             },
             delDoc() {
 //                store.delDoc(this.docNo);
@@ -258,7 +235,7 @@
                 this.fetchDocNoList();
             },
             getSummaries(param) {
-                const {columns, data} = param;
+                const { columns, data } = param;
                 const sums = [];
                 columns.forEach((column, index) => {
                     if (index === 0) {
@@ -280,7 +257,6 @@
                         sums[index] = 'N/A';
                     }
                 });
-
                 return sums;
             },
             paymentStatus (row) {
@@ -313,12 +289,12 @@
                 const colName = column.label;
                 if (colName !== '客户名称' && colName !== '操作') {
                     if (this.expands.length === 0) {
-                        this.expands.push(row.name);
+                        this.expands.push(row.id);
                     } else {
-                        const obj = this.expands.filter(item => item === row.name);
+                        const obj = this.expands.filter(item => item === row.id);
                         this.expands = [];
                         if (obj.length === 0) {
-                            this.expands.push(row.name);
+                            this.expands.push(row.id);
                         }
                     }
                 }

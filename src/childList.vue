@@ -51,7 +51,8 @@
 </template>
 
 <script>
-    import Vue from 'vue'
+    import common from './common.js';
+
     export default {
         components: {},
         name: 'childList',
@@ -71,7 +72,7 @@
         computed: {},
         methods: {
             getSummaries(param) {
-                const {columns, data} = param;
+                const { columns, data } = param;
                 const sums = [];
                 columns.forEach((column, index) => {
                     if (index === 0) {
@@ -97,22 +98,12 @@
                 return sums;
             },
             addProduct(index){
-                const product = {
-                    name: '',
-                    quantity: 1,
-                    inUnitPrice: '',
-                    outUnitPrice: '',
-                    inTotalPrice: '',
-                    outTotalPrice: '',
-                    profit: '',
-                    isRMB: false
-                }
-                this.products.splice(index + 1, 0, product);
+                this.products.splice(index + 1, 0, common.initProduct());
             },
             delProduct(index){
                 if (this.products.length == 1) {
                     // this.$message({message: '恭喜你，这是一条成功消息', type: 'success'});
-                    this.$message({message: '必须保留一个商品', type: 'warning'});
+                    this.$message({ message: '必须保留一个商品', type: 'warning' });
                     // this.$message({message: '恭喜你，这是一条成功消息', type: 'error'});
                     // this.$message({message: '恭喜你，这是一条成功消息'});
                 } else {
